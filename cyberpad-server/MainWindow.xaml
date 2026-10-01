@@ -1,0 +1,278 @@
+<Window x:Class="CyberPad.Server.UI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="CyberPad Server" Width="1080" Height="720"
+        WindowStyle="None" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen"
+        Background="{StaticResource ObsidianDarkBrush}"
+        Foreground="{StaticResource TextBrush}"
+        FontFamily="{StaticResource TechFont}" FontSize="12"
+        UseLayoutRounding="True" SnapsToDevicePixels="True">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="46" ResizeBorderThickness="0" GlassFrameThickness="0"
+                      CornerRadius="0" UseAeroCaptionButtons="False" />
+    </WindowChrome.WindowChrome>
+
+    <Window.Resources>
+
+        <DataTemplate x:Key="SlotCardTemplate">
+            <ContentControl Margin="6" Height="112" Padding="16,10">
+                <ContentControl.Style>
+                    <Style TargetType="ContentControl" BasedOn="{StaticResource CyberPanel}">
+                        <Setter Property="BorderBrush" Value="{StaticResource DimLineBrush}" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsActive}" Value="True">
+                                <Setter Property="BorderBrush" Value="{StaticResource NeonCyanBrush}" />
+                                <Setter Property="Effect" Value="{StaticResource CyanGlowSoft}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ContentControl.Style>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <DockPanel Grid.Row="0" LastChildFill="False">
+                        <TextBlock DockPanel.Dock="Left" Text="{Binding Badge}"
+                                   FontFamily="{StaticResource DisplayFont}" FontSize="26" FontWeight="Bold"
+                                   Foreground="{StaticResource CyberYellowBrush}">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Opacity" Value="0.45" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsActive}" Value="True">
+                                            <Setter Property="Opacity" Value="1" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <TextBlock DockPanel.Dock="Right" Text="{Binding Status}"
+                                   VerticalAlignment="Center" FontSize="12" FontWeight="Bold">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Foreground" Value="{StaticResource MutedTextBrush}" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsActive}" Value="True">
+                                            <Setter Property="Foreground" Value="{StaticResource NeonCyanBrush}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </DockPanel>
+
+                    <TextBlock Grid.Row="1" Text="{Binding Endpoint}" VerticalAlignment="Center"
+                               FontSize="12" Foreground="{StaticResource TextBrush}"
+                               TextTrimming="CharacterEllipsis" />
+
+                    <DockPanel Grid.Row="2" LastChildFill="False">
+                        <TextBlock DockPanel.Dock="Left" Text="PACKET RATE" FontSize="10"
+                                   Foreground="{StaticResource MutedTextBrush}" />
+                        <TextBlock DockPanel.Dock="Right" Text="{Binding Rate}" FontSize="12" FontWeight="Bold"
+                                   Foreground="{StaticResource NeonCyanBrush}" />
+                    </DockPanel>
+                </Grid>
+            </ContentControl>
+        </DataTemplate>
+
+        <DataTemplate x:Key="AddressTemplate">
+            <StackPanel>
+                <TextBlock Text="{Binding Ip}" FontFamily="{StaticResource DisplayFont}"
+                           FontSize="16" FontWeight="Bold">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Foreground" Value="{StaticResource NeonCyanBrush}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsUsbTether}" Value="True">
+                                    <Setter Property="Foreground" Value="{StaticResource CyberYellowBrush}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+                <TextBlock Text="{Binding Caption}" FontSize="10" Margin="0,2,0,0"
+                           Foreground="{StaticResource MutedTextBrush}" TextTrimming="CharacterEllipsis" />
+            </StackPanel>
+        </DataTemplate>
+
+    </Window.Resources>
+
+    <Border BorderBrush="#4400F0FF" BorderThickness="1">
+        <Grid>
+            <Rectangle Fill="{StaticResource GridOverlayBrush}" IsHitTestVisible="False" />
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="46" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="38" />
+                </Grid.RowDefinitions>
+
+                <!-- Title bar -->
+                <Grid Grid.Row="0" Background="{StaticResource ObsidianDarkBrush}">
+                    <Border BorderBrush="#3300F0FF" BorderThickness="0,0,0,1" />
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="22,0,0,0">
+                        <Polygon Points="0,7 7,0 14,7 7,14" Fill="{StaticResource NeonCyanBrush}"
+                                 Effect="{StaticResource CyanGlow}" Margin="0,0,12,0" VerticalAlignment="Center" />
+                        <TextBlock Text="CYBERPAD" FontFamily="{StaticResource DisplayFont}" FontSize="18"
+                                   FontWeight="Bold" Foreground="{StaticResource NeonCyanBrush}"
+                                   Effect="{StaticResource CyanGlow}" VerticalAlignment="Center" />
+                        <TextBlock Text="  // PC SERVER" FontSize="12" Foreground="{StaticResource ElectricPinkBrush}"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <TextBlock Text="v1.1.0" FontSize="11" Foreground="{StaticResource CyberYellowBrush}"
+                                   VerticalAlignment="Center" Margin="0,0,14,0" />
+                        <Button Style="{StaticResource CyberChromeButton}" Click="MinimizeButton_Click"
+                                WindowChrome.IsHitTestVisibleInChrome="True">
+                            <Path Data="M 0,5 L 10,5" Stroke="{StaticResource NeonCyanBrush}" StrokeThickness="1.5" />
+                        </Button>
+                        <Button Style="{StaticResource CyberChromeButton}" Tag="{StaticResource PinkHoverBrush}"
+                                Click="CloseButton_Click" WindowChrome.IsHitTestVisibleInChrome="True">
+                            <Path Data="M 0,0 L 10,10 M 10,0 L 0,10" Stroke="{StaticResource ElectricPinkBrush}"
+                                  StrokeThickness="1.5" />
+                        </Button>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Content -->
+                <Grid Grid.Row="1" Margin="22">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="370" />
+                        <ColumnDefinition Width="22" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Pairing panel -->
+                    <ContentControl Grid.Column="0" Style="{StaticResource CyberPanel}">
+                        <StackPanel>
+                            <DockPanel LastChildFill="False">
+                                <TextBlock DockPanel.Dock="Left" Text="PAIRING QR"
+                                           FontFamily="{StaticResource DisplayFont}" FontSize="14" FontWeight="Bold"
+                                           Foreground="{StaticResource NeonCyanBrush}" />
+                                <TextBlock DockPanel.Dock="Right" Text="MODE // XBOX 360" FontSize="10"
+                                           Foreground="{StaticResource ElectricPinkBrush}" VerticalAlignment="Center" />
+                            </DockPanel>
+                            <TextBlock Text="SCAN WITH CYBERPAD MOBILE" FontSize="10" Margin="0,4,0,14"
+                                       Foreground="{StaticResource MutedTextBrush}" />
+
+                            <Border Width="290" Height="290" Padding="8" Background="#E8FDFF"
+                                    BorderBrush="{StaticResource NeonCyanBrush}" BorderThickness="2"
+                                    Effect="{StaticResource CyanGlow}">
+                                <Grid>
+                                    <Image x:Name="QrImage" Stretch="Uniform"
+                                           RenderOptions.BitmapScalingMode="NearestNeighbor" />
+                                    <TextBlock x:Name="QrPlaceholder" Text="NO NETWORK" FontWeight="Bold"
+                                               Foreground="{StaticResource ObsidianDarkBrush}"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"
+                                               Visibility="Collapsed" />
+                                </Grid>
+                            </Border>
+
+                            <TextBlock Text="ROOM ID" FontSize="10" Margin="0,16,0,0"
+                                       Foreground="{StaticResource MutedTextBrush}" />
+                            <TextBlock x:Name="RoomText" FontFamily="{StaticResource DisplayFont}" FontSize="30"
+                                       FontWeight="Bold" Foreground="{StaticResource CyberYellowBrush}" />
+                            <TextBlock x:Name="PayloadText" FontSize="10" Margin="0,6,0,12"
+                                       Foreground="{StaticResource MutedTextBrush}"
+                                       TextWrapping="Wrap" MinHeight="28" />
+
+                            <UniformGrid Columns="2">
+                                <Button x:Name="NewRoomButton" Content="NEW ROOM" Margin="0,0,5,0"
+                                        Style="{StaticResource CyberButton}" Click="NewRoomButton_Click" />
+                                <Button x:Name="CopyLinkButton" Content="COPY LINK" Margin="5,0,0,0"
+                                        Style="{StaticResource CyberButton}" Click="CopyLinkButton_Click" />
+                            </UniformGrid>
+                        </StackPanel>
+                    </ContentControl>
+
+                    <!-- Right column -->
+                    <Grid Grid.Column="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <!-- Slot hub -->
+                        <ContentControl Grid.Row="0" Style="{StaticResource CyberPanel}">
+                            <StackPanel>
+                                <DockPanel LastChildFill="False" Margin="0,0,0,8">
+                                    <TextBlock DockPanel.Dock="Left" Text="SLOT HUB"
+                                               FontFamily="{StaticResource DisplayFont}" FontSize="14" FontWeight="Bold"
+                                               Foreground="{StaticResource NeonCyanBrush}" />
+                                    <TextBlock DockPanel.Dock="Left" Text="  // P1-P4" FontSize="12"
+                                               Foreground="{StaticResource ElectricPinkBrush}" VerticalAlignment="Center" />
+                                    <TextBlock DockPanel.Dock="Right" Text="HEARTBEAT TIMEOUT 3000 MS" FontSize="10"
+                                               Foreground="{StaticResource MutedTextBrush}" VerticalAlignment="Center" />
+                                </DockPanel>
+                                <ItemsControl x:Name="SlotsItems" ItemTemplate="{StaticResource SlotCardTemplate}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <UniformGrid Columns="2" Rows="2" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                </ItemsControl>
+                            </StackPanel>
+                        </ContentControl>
+
+                        <!-- Warning banner -->
+                        <Border x:Name="WarningBanner" Grid.Row="1" Margin="0,14,0,0" Padding="14,10"
+                                BorderBrush="{StaticResource ElectricPinkBrush}" BorderThickness="1.5"
+                                Background="#22FF0055" Visibility="Collapsed">
+                            <TextBlock x:Name="WarningText" TextWrapping="Wrap" FontSize="11"
+                                       Foreground="{StaticResource ElectricPinkBrush}" />
+                        </Border>
+
+                        <!-- Network interfaces -->
+                        <ContentControl Grid.Row="2" Style="{StaticResource CyberPanel}" Margin="0,14,0,0">
+                            <DockPanel>
+                                <StackPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+                                    <TextBlock Text="NETWORK INTERFACES" FontFamily="{StaticResource DisplayFont}"
+                                               FontSize="14" FontWeight="Bold"
+                                               Foreground="{StaticResource NeonCyanBrush}" />
+                                    <TextBlock Text="USB TETHER (192.168.42.x) GIVES THE LOWEST LATENCY. SELECT AN INTERFACE TO REBUILD THE QR."
+                                               FontSize="10" Margin="0,4,0,0" TextWrapping="Wrap"
+                                               Foreground="{StaticResource MutedTextBrush}" />
+                                </StackPanel>
+                                <Grid>
+                                    <ListBox x:Name="AddressList" Style="{StaticResource CyberListBox}"
+                                             ItemContainerStyle="{StaticResource CyberListItem}"
+                                             ItemTemplate="{StaticResource AddressTemplate}"
+                                             SelectionChanged="AddressList_SelectionChanged" />
+                                    <TextBlock x:Name="EmptyAddressText" Text="NO NETWORK INTERFACE DETECTED"
+                                               Foreground="{StaticResource ElectricPinkBrush}" FontSize="11"
+                                               Visibility="Collapsed" />
+                                </Grid>
+                            </DockPanel>
+                        </ContentControl>
+                    </Grid>
+                </Grid>
+
+                <!-- Status bar -->
+                <Border Grid.Row="2" BorderBrush="#3300F0FF" BorderThickness="0,1,0,0"
+                        Background="{StaticResource ObsidianDarkBrush}">
+                    <DockPanel Margin="22,0">
+                        <TextBlock x:Name="RxText" DockPanel.Dock="Right" VerticalAlignment="Center" FontSize="10"
+                                   Foreground="{StaticResource MutedTextBrush}" Text="RX 0 | DROP 0 | CLASH 0" />
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Ellipse x:Name="DriverDot" Width="9" Height="9" Margin="0,0,8,0"
+                                     Fill="{StaticResource CyberYellowBrush}" />
+                            <TextBlock x:Name="DriverText" Text="VIGEMBUS // INIT" FontSize="10" Margin="0,0,26,0" />
+                            <Ellipse x:Name="FirewallDot" Width="9" Height="9" Margin="0,0,8,0"
+                                     Fill="{StaticResource CyberYellowBrush}" />
+                            <TextBlock x:Name="FirewallText" Text="FIREWALL // PENDING" FontSize="10" Margin="0,0,26,0" />
+                            <Ellipse x:Name="UdpDot" Width="9" Height="9" Margin="0,0,8,0"
+                                     Fill="{StaticResource CyberYellowBrush}" />
+                            <TextBlock x:Name="UdpText" Text="UDP // PENDING" FontSize="10" />
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>
